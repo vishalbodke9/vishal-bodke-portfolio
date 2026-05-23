@@ -2938,44 +2938,34 @@
       contactForm.addEventListener("submit", async function (e) {
         e.preventDefault();
         const btn = document.getElementById("subBtn");
-        btn.classList.add("ld"); // Show loading spinner
+        btn.classList.add("ld");
 
-        // Package all form data, including the file attachment
         const formData = new FormData(contactForm);
 
-        // ⚠️ WEB3FORMS CONFIGURATION ⚠️
+        // Explicitly set the Access Key here
         formData.append("access_key", "43e40043-384c-4105-91bf-f91b723c94ce");
-
-        // Optional: Set a custom subject line for your inbox
-        const subjectValue = document.getElementById("fs").value.trim();
-        formData.append("subject", `Portfolio Inquiry: ${subjectValue}`);
 
         try {
           const response = await fetch("https://api.web3forms.com/submit", {
             method: "POST",
             body: formData,
-            headers: {
-              Accept: "application/json", // Ensures we get a JSON response back
-            },
+            // REMOVE the 'headers' object entirely when sending FormData
+            // The browser automatically sets the correct 'Content-Type' (multipart/form-data)
           });
 
-          // Web3Forms returns a JSON object with a success boolean
           const result = await response.json();
 
           if (response.ok && result.success) {
-            document.getElementById("thankYou").classList.add("on"); // Show Thank You Screen
+            document.getElementById("thankYou").classList.add("on");
             contactForm.reset();
           } else {
-            // If Web3Forms rejects it, throw their specific error message
-            throw new Error(result.message || "Server Error");
+            throw new Error(result.message || "Failed to send message");
           }
         } catch (error) {
-          alert(
-            "Sorry, your message could not be sent. Please email me directly at vishalbodke7530@gmail.com.",
-          );
+          alert("Error: " + error.message);
           console.error(error);
         } finally {
-          btn.classList.remove("ld"); // Hide loading spinner
+          btn.classList.remove("ld");
         }
       });
 
